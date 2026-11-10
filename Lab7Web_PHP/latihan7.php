@@ -1,0 +1,43 @@
+<?php
+$error = null;
+$subtotal = null;
+$barang = "";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $barang = trim($_POST["barang"] ?? "");
+    $hargaInput = $_POST["harga"] ?? "";
+    $jumlahInput = $_POST["jumlah"] ?? "";
+    
+    if ($barang === "" || !is_numeric($hargaInput) || !ctype_digit((string)$jumlahInput) || (float)$hargaInput < 0 || (int)$jumlahInput < 1) {
+        $error = "Periksa kembali nama barang, harga, dan jumlah.";
+    } else {
+        $harga = (float) $hargaInput;
+        $jumlah = (int) $jumlahInput;
+        $subtotal = $harga * $jumlah;
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Pengolahan Data Barang</title>
+</head>
+<body>
+    <form method="POST">
+        <label>Nama barang <br><input name="barang" value="<?= htmlspecialchars($barang) ?>" required></label><br><br>
+        <label>Harga <br><input name="harga" type="number" min="0" step="0.01" required></label><br><br>
+        <label>Jumlah <br><input name="jumlah" type="number" min="1" step="1" required></label><br><br>
+        <button type="submit">Hitung</button>
+    </form>
+
+    <?php
+    if (isset($error)) {
+        echo "<p style='color: red;'>" . htmlspecialchars($error) . "</p>";
+    } elseif (isset($subtotal)) {
+        echo "<p>Barang: " . htmlspecialchars($barang) . "</p>";
+        echo "<p>Subtotal: Rp " . number_format($subtotal, 0, ",", ".") . "</p>";
+    }
+    ?>
+</body>
+</html>
